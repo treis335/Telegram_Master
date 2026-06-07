@@ -24,11 +24,9 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @authorized_only
 async def reboot(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Reboot direto."""
-    chat_id = update.effective_chat.id
-    msg = await update.message.reply_text("🔄 Reiniciando servidor em 5 segundos...")
-    schedule_delete(context, chat_id, msg.message_id, 10)
-    context.job_queue.run_once(execute_reboot, 5, context={"chat_id": chat_id})
+    """Reboot imediato (sem atraso)."""
+    await update.message.reply_text("🔄 A reiniciar o servidor agora...")
+    subprocess.run(["/usr/bin/sudo", "/usr/local/bin/reboot_server.sh"])
 
 async def execute_reboot(job):
     chat_id = job.context["chat_id"]
