@@ -25,17 +25,14 @@ logging.basicConfig(
 def main():
     app = Application.builder().token(TOKEN).build()
 
-    # Comandos base
     app.add_handler(CommandHandler("start", system.start))
     app.add_handler(CommandHandler("help", system.help_cmd))
     app.add_handler(CommandHandler("reboot", reboot))
 
-    # Comandos Dexyln
     app.add_handler(CommandHandler("status_dexyln", dexyln.status))
     app.add_handler(CommandHandler("restart_dexyln", dexyln.restart))
     app.add_handler(CommandHandler("logs_dexyln", dexyln.logs))
 
-    # Compatibilidade antiga
     app.add_handler(CommandHandler("status_arb", dexyln.status))
     app.add_handler(CommandHandler("restart_arb", dexyln.restart))
     app.add_handler(CommandHandler("logs_arb", dexyln.logs))
