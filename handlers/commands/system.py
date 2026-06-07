@@ -60,15 +60,15 @@ async def reboot_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 async def execute_reboot(job):
-    """Função chamada após 5 segundos para executar o reboot."""
     chat_id = job.context["chat_id"]
-    bot = job.context["bot"]
+    bot = job.context.get("bot")
     try:
-        await bot.send_message(chat_id, "💤 A reiniciar o servidor agora...")
+        if bot:
+            await bot.send_message(chat_id, "💤 A reiniciar agora...")
     except:
         pass
-    # Executa o comando reboot (com caminho completo)
-    run_cmd("sudo /usr/sbin/reboot")
+    import os
+    os.system("sudo /usr/sbin/reboot")  # mais direto que subprocess
 
 @authorized_only
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
