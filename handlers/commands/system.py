@@ -8,6 +8,27 @@ from utils.chat_cleaner import schedule_delete
 WAITING_CONFIRMATION = 1
 
 @authorized_only
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /start"""
+    await update.message.reply_text(
+        "🤖 Bot Master ativo.\nComandos disponíveis: /help"
+    )
+
+@authorized_only
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Comando /help"""
+    texto = (
+        "/status_dexyln – estado do bot de arbitragem (Dexyln)\n"
+        "/restart_dexyln – reinicia o bot de arbitragem (Dexyln)\n"
+        "/logs_dexyln – últimos logs do bot de arbitragem (Dexyln)\n"
+        "/reboot – reinicia o servidor (com confirmação)\n"
+        "/help – mostra esta ajuda\n\n"
+        "Os comandos antigos /status_arb, /restart_arb, /logs_arb também funcionam.\n"
+        "As mensagens são auto‑apagadas após alguns minutos."
+    )
+    await update.message.reply_text(texto)
+
+@authorized_only
 async def reboot(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Inicia o pedido de confirmação."""
     msg = await update.message.reply_text(
