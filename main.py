@@ -1,9 +1,9 @@
 import os
 import logging
 from dotenv import load_dotenv
-from telegram.ext import Application, CommandHandler, ConversationHandler, MessageHandler, filters
+from telegram.ext import Application, CommandHandler
 from handlers.commands import system, dexyln
-from handlers.commands.system import reboot, reboot_confirm, cancel, WAITING_CONFIRMATION
+from handlers.commands.system import reboot
 
 load_dotenv()
 
@@ -25,26 +25,17 @@ logging.basicConfig(
 def main():
     app = Application.builder().token(TOKEN).build()
 
-    # Comandos base (sem conversação)
+    # Comandos base
     app.add_handler(CommandHandler("start", system.start))
     app.add_handler(CommandHandler("help", system.help_cmd))
+    app.add_handler(CommandHandler("reboot", reboot))
 
-    # ConversationHandler para reboot
-    reboot_handler = ConversationHandler(
-        entry_points=[CommandHandler("reboot", reboot)],
-        states={
-            WAITING_CONFIRMATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, reboot_confirm)],
-        },
-        fallbacks=[CommandHandler("cancel", cancel)],
-    )
-    app.add_handler(reboot_handler)
-
-    # Comandos do bot Dexyln (novos nomes)
+    # Comandos Dexyln
     app.add_handler(CommandHandler("status_dexyln", dexyln.status))
     app.add_handler(CommandHandler("restart_dexyln", dexyln.restart))
     app.add_handler(CommandHandler("logs_dexyln", dexyln.logs))
 
-    # Compatibilidade com nomes antigos
+    # Compatibilidade antiga
     app.add_handler(CommandHandler("status_arb", dexyln.status))
     app.add_handler(CommandHandler("restart_arb", dexyln.restart))
     app.add_handler(CommandHandler("logs_arb", dexyln.logs))
