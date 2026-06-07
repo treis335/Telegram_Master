@@ -1,7 +1,10 @@
-from functools import wraps
 import os
+from functools import wraps
+from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import ContextTypes
+
+load_dotenv()  # <-- adicionar esta linha
 
 AUTHORIZED_ID = int(os.getenv("AUTHORIZED_USER_ID"))
 
