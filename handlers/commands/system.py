@@ -34,7 +34,8 @@ async def execute_reboot(job):
     chat_id = job.context["chat_id"]
     try:
         logger.info(f"Tentando reiniciar o servidor após comando do chat {chat_id}")
-        subprocess.run("/usr/bin/sudo /usr/sbin/reboot", shell=True, check=True, timeout=10)
+        # Usa subprocess com lista de argumentos (mais seguro) e caminho absoluto
+        subprocess.run(["/usr/bin/sudo", "/usr/sbin/reboot"], check=True, timeout=10)
         logger.info("Comando reboot executado com sucesso.")
     except subprocess.TimeoutExpired:
         logger.error("Timeout ao executar o reboot.")
