@@ -8,6 +8,21 @@ from utils.chat_cleaner import schedule_delete
 logger = logging.getLogger(__name__)
 
 @authorized_only
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🤖 Bot Master ativo. Use /help")
+
+@authorized_only
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    texto = (
+        "/status_dexyln – estado do bot Dexyln\n"
+        "/restart_dexyln – reinicia o bot Dexyln\n"
+        "/logs_dexyln – logs do bot Dexyln\n"
+        "/reboot – reinicia o servidor (imediato)\n"
+        "/help – ajuda"
+    )
+    await update.message.reply_text(texto)
+
+@authorized_only
 async def reboot(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Reboot direto."""
     chat_id = update.effective_chat.id
@@ -16,11 +31,9 @@ async def reboot(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.job_queue.run_once(execute_reboot, 5, context={"chat_id": chat_id})
 
 async def execute_reboot(job):
-    """Função chamada após 5 segundos para executar o reboot."""
     chat_id = job.context["chat_id"]
     try:
         logger.info(f"Tentando reiniciar o servidor após comando do chat {chat_id}")
-        # Usa shell=True para simular um terminal e /usr/bin/sudo para garantir o PATH correto
         subprocess.run("/usr/bin/sudo /usr/sbin/reboot", shell=True, check=True, timeout=10)
         logger.info("Comando reboot executado com sucesso.")
     except subprocess.TimeoutExpired:
