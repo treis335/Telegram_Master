@@ -1,7 +1,9 @@
 import os
 import logging
 from dotenv import load_dotenv
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler
+from telegram.ext import Application, CommandHandler, ConversationHandler, MessageHandler, filters
+from handlers.commands import system, dexyln
+from handlers.commands.system import reboot, reboot_confirm, cancel, WAITING_CONFIRMATION
 
 load_dotenv()
 
@@ -20,37 +22,34 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-# Import handlers
-from handlers.commands import system, dexyln
-
 def main():
     app = Application.builder().token(TOKEN).build()
 
-    # ConversationHandler para o comando /reboot
-    reboot_conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("reboot", system.reboot)],
-        states={
-            system.WAITING_CONFIRMATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, system.reboot_confirm)],
-        },
-        fallbacks=[CommandHandler("cancel", system.cancel)],
-    )
-    app.add_handler(reboot_conv_handler)
-
-    # Comandos base (sem confirmação)
+    # Comandos base (sem conversação)
     app.add_handler(CommandHandler("start", system.start))
     app.add_handler(CommandHandler("help", system.help_cmd))
 
-    # Comandos para o bot Dexyln (novos nomes)
+    # ConversationHandler para reboot
+    reboot_handler = ConversationHandler(
+        entry_points=[CommandHandler("reboot", reboot)],
+        states={
+            WAITING_CONFIRMATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, reboot_confirm)],
+        },
+        fallbacks=[CommandHandler("cancel", cancel)],
+    )
+    app.add_handler(reboot_handler)
+
+    # Comandos do bot Dexyln (novos nomes)
     app.add_handler(CommandHandler("status_dexyln", dexyln.status))
     app.add_handler(CommandHandler("restart_dexyln", dexyln.restart))
     app.add_handler(CommandHandler("logs_dexyln", dexyln.logs))
 
-    # Compatibilidade com nomes antigos (status_arb, restart_arb, logs_arb)
+    # Compatibilidade com nomes antigos
     app.add_handler(CommandHandler("status_arb", dexyln.status))
     app.add_handler(CommandHandler("restart_arb", dexyln.restart))
     app.add_handler(CommandHandler("logs_arb", dexyln.logs))
 
-    logging.info("Bot Master iniciado com chat cleaner e confirmação para reboot")
+    logging.info("Bot Master iniciado")
     app.run_polling()
 
 if __name__ == "__main__":
